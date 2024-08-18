@@ -1,0 +1,40 @@
+{
+    "days": [
+        {
+            "number": 1,
+            "name": "Introduction to Flutter",
+            "link1": "https://flutter.dev/",
+            "link2": "https://docs.flutter.dev/",
+            "articles": [
+                {
+                    "name": "What is Flutter?",
+                    "link": "https://flutter.dev/docs/get-started/what-is-flutter"
+                },
+                {
+                    "name": "Installing Flutter",
+                    "link": "https://flutter.dev/docs/get-started/install"
+                }
+            ]
+        },
+        {
+            "number": 33,
+            "name": "Pädiatrie",
+            "link1": "https://next.amboss.com/de/courses/f30k3f/q7aC5N",
+            "link2": "https://next.amboss.com/de/courses/f30k3f/q7aC5N/questions/eCGNaxIY1O",
+            "articles": [
+                {
+                    "name": "Akute Bronchiolitis im Säuglingsalter",
+                    "link": "https://next.amboss.com/de/courses/f30k3f/q7aC5N/article/EF08P3"
+                },
+                {
+                    "name": "Using Stacks",
+                    "link": "https://flutter.dev/docs/development/ui/layout/constraints"
+                },
+                {
+                    "name": "Flexible and Expanded",
+                    "link": "https://flutter.dev/docs/development/ui/layout/constraints"
+                }
+            ]
+        }
+    ]
+}
