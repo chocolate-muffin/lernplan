@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 57, 165, 66)),
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 204, 20, 232)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -177,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         },
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Add your logic here
