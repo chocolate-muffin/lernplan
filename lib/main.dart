@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+// import 'package:url_launcher/url_launcher_string.dart';
 
 void main() {
   runApp(
@@ -182,13 +182,11 @@ Future<List<dynamic>> loadArticleData() async {
 
 // Function to open URL in a new browser tab
 Future<void> openInBrowser(String url) async {
-  if (await canLaunchUrlString(url)) {
-    await launchUrlString(
-      url,
-      mode: LaunchMode.externalApplication, // Open in external browser
-    );
+  final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri);
   } else {
     // Handle the case where the URL cannot be launched
-    print('Could not launch $url');
+    // print('Could not launch $url'); TODO: add snackbar
   }
 }
