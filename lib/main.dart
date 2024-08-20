@@ -19,7 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 57, 165, 66)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -121,9 +122,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                           children: <Widget>[
                                             Expanded(
                                               child: InkWell(
-                                                onTap: () {
-                                                  openInBrowser(
+                                                onTap: () async {
+                                                  final uri = Uri.parse(
                                                       article['link']);
+                                                  if (await canLaunchUrl(uri)) {
+                                                    await launchUrl(uri);
+                                                  } else {
+                                                    // Handle the case where the URL cannot be launched
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                            "Could not launch ${article['link']}"),
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                                 splashColor: Colors.transparent,
                                                 highlightColor:
@@ -178,15 +192,4 @@ Future<List<dynamic>> loadArticleData() async {
   String jsonString = await rootBundle.loadString('assets/article_data.json');
   final jsonResponse = json.decode(jsonString);
   return jsonResponse['days']; // Extract the 'days' array
-}
-
-// Function to open URL in a new browser tab
-Future<void> openInBrowser(String url) async {
-  final uri = Uri.parse(url);
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(uri);
-  } else {
-    // Handle the case where the URL cannot be launched
-    // print('Could not launch $url'); TODO: add snackbar
-  }
 }
