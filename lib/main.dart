@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/dayList.dart';
+import 'package:myapp/screens/day_list.dart';
+import 'package:myapp/screens/article_list.dart';
 
 void main() => runApp(const MyApp());
 
@@ -20,14 +21,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Define your second page widget
-class SearchPage extends StatelessWidget {
-  const SearchPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const Text('This is the second page');
-  }
-}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

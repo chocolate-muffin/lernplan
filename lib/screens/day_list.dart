@@ -1,4 +1,3 @@
-// Suggested code may be subject to a license. Learn more: ~LicenseLog:2572751380.
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
