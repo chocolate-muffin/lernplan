@@ -120,17 +120,19 @@ class _ArticleCardState extends State<ArticleCard> {
   String get day => widget.day;
   String get article => widget.article;
   bool _isStarred = false;
+  bool _isRead = false;
 
   @override
   void initState() {
     super.initState();
     _loadStarredStatus();
+    _loadReadStatus();
   }
 
   void _loadStarredStatus() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isStarred = prefs.getBool(article) ?? false;
+      _isStarred = prefs.getBool('starred_$article') ?? false;
     });
   }
 
@@ -139,7 +141,22 @@ class _ArticleCardState extends State<ArticleCard> {
     setState(() {
       _isStarred = !_isStarred;
     });
-    await prefs.setBool(article, _isStarred);
+    await prefs.setBool('starred_$article', _isStarred);
+  }
+
+  void _loadReadStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isRead = prefs.getBool('read_$article') ?? false;
+    });
+  }
+
+  void _toggleRead() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isRead = !_isRead;
+    });
+    await prefs.setBool('read_$article', _isRead);
   }
 
   @override
@@ -148,9 +165,18 @@ class _ArticleCardState extends State<ArticleCard> {
       child: ListTile(
         title: Text(article),
         subtitle: Text(day),
-        trailing: IconButton(
-          icon: Icon(_isStarred ? Icons.star : Icons.star_border),
-          onPressed: _toggleStarred,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min, // Prevent Row from taking full width
+          children: [
+            IconButton(
+              icon: Icon(_isStarred ? Icons.star : Icons.star_border),
+              onPressed: _toggleStarred,
+            ),
+            IconButton(
+              icon: Icon(_isRead ? Icons.check_circle : Icons.check_circle_outline), 
+              onPressed: _toggleRead,
+            ),
+          ],
         ),
       ),
     );
