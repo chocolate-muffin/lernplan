@@ -15,6 +15,8 @@ class _SearchPageState extends State<SearchPage> {
   late Future<Map<String, List<String>>> articleListData;
   final TextEditingController _textEditingController =
       TextEditingController(); // Add a text editing controller
+  String? _selectedCategory;
+  late TextEditingController dayController;
 
   @override
   void initState() {
@@ -24,73 +26,145 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _textEditingController,
-          onChanged: (text) {
-            setState(() {}); // Rebuild the widget when the text changes
-          },
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: IconButton(
-              onPressed: () {
-                _textEditingController
-                    .clear(); // Clear the text when the icon is pressed
-                setState(() {}); // Rebuild the widget when the text is cleared
-              },
-              icon: const Icon(Icons.clear),
-            ),
-            labelText: 'Artikel',
-            hintText: 'Search...',
-            border: const OutlineInputBorder(),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Searchfield
+              TextField(
+                controller: _textEditingController,
+                onChanged: (text) {
+                  setState(() {}); // Rebuild the widget when the text changes
+                },
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      _textEditingController
+                          .clear(); // Clear the text when the icon is pressed
+                      setState(
+                          () {}); // Rebuild the widget when the text is cleared
+                    },
+                    icon: const Icon(Icons.clear),
+                  ),
+                  labelText: 'Artikel',
+                  hintText: 'Search...',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              // Filters
+              FutureBuilder<Map<String, List<String>>>(
+                future: articleListData,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final data = snapshot.data!;
+                    final categories =
+                        data.keys.toList(); // Add 'All' to the beginning
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Autocomplete<String>(
+                            optionsBuilder:
+                                (TextEditingValue textEditingValue) {
+                              if (textEditingValue.text == '') {
+                                return const Iterable<String>.empty();
+                              }
+                              return categories.where((String option) {
+                                return option.toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase());
+                              });
+                            },
+                            onSelected: (String selection) {
+                              setState(() {
+                                _selectedCategory = selection;
+                              });
+                            },
+                            fieldViewBuilder: (BuildContext context,
+                                TextEditingController
+                                    fieldTextEditingController,
+                                FocusNode fieldFocusNode,
+                                VoidCallback onFieldSubmitted) {
+                              dayController = fieldTextEditingController;
+                              return TextField(
+                                controller: fieldTextEditingController,
+                                focusNode: fieldFocusNode,
+                              );
+                            },
+                          ),
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedCategory = null;
+                                dayController.text = '';
+                              });
+                            },
+                            icon: const Icon(Icons.clear))
+                      ],
+                    );
+                  }
+                },
+              ),
+            ],
           ),
         ),
-      ),
-      body: FutureBuilder<Map<String, List<String>>>(
-        future: articleListData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            final data = snapshot.data!;
-            final searchText = _textEditingController.text.toLowerCase();
+        // List
+        Expanded(
+          child: FutureBuilder<Map<String, List<String>>>(
+            future: articleListData,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final data = snapshot.data!;
+                final searchText = _textEditingController.text.toLowerCase();
 
-            // Filter the articles based on search text
-            final filteredData = Map.fromEntries(
-              data.entries.map((entry) {
-                final day = entry.key;
-                final articles = entry.value;
-                return MapEntry(
-                  day,
-                  articles
-                      .where((article) =>
-                          article.toLowerCase().contains(searchText))
-                      .toList(),
+                // Filter the articles based on search text
+                final filteredData = Map.fromEntries(
+                  data.entries.where((entry) {
+                    final day = entry.key;
+                    return _selectedCategory == null ||
+                        _selectedCategory == day;
+                  }).map((entry) {
+                    final day = entry.key;
+                    final articles = entry.value;
+                    return MapEntry(
+                      day,
+                      articles
+                          .where((article) =>
+                              article.toLowerCase().contains(searchText))
+                          .toList(),
+                    );
+                  }),
                 );
-              }),
-            );
 
-            return ListView(
-              children: filteredData.entries.expand((entry) {
-                final day = entry.key;
-                final articles = entry.value;
-                return articles
-                    .map((article) => ArticleCard(day: day, article: article));
-              }).toList(),
-            );
-          }
-        },
-      ),
+                return ListView(
+                  children: filteredData.entries.expand((entry) {
+                    final day = entry.key;
+                    final articles = entry.value;
+                    return articles.map(
+                        (article) => ArticleCard(day: day, article: article));
+                  }).toList(),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
   @override
   void dispose() {
-    _textEditingController
-        .dispose(); // Dispose the controller when the widget is disposed
+    _textEditingController.dispose();
     super.dispose();
   }
 }
@@ -173,7 +247,8 @@ class _ArticleCardState extends State<ArticleCard> {
               onPressed: _toggleStarred,
             ),
             IconButton(
-              icon: Icon(_isRead ? Icons.check_circle : Icons.check_circle_outline), 
+              icon: Icon(
+                  _isRead ? Icons.check_circle : Icons.check_circle_outline),
               onPressed: _toggleRead,
             ),
           ],
