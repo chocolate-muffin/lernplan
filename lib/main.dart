@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/day_list.dart';
-import 'package:myapp/screens/article_list.dart';
-import 'package:myapp/screens/settings.dart';
+import 'package:lernplan/screens/day_list.dart';
+import 'package:lernplan/screens/article_list.dart';
+import 'package:lernplan/screens/settings.dart';
 
 void main() => runApp(const MyApp());
 
