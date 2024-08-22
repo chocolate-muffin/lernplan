@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/day_list.dart';
 import 'package:myapp/screens/article_list.dart';
+import 'package:myapp/screens/settings.dart';
 
 void main() => runApp(const MyApp());
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 0, 86, 247)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Lernplan'),
     );
   }
 }
@@ -58,6 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.search),
             label: 'Search',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
       ),
       body: <Widget>[
@@ -65,6 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
         const DayList(),
         /// Search page
         const SearchPage(),
+        /// Settings page
+        const SettingsSecreen(),
       ][currentPageIndex],
     );
   }

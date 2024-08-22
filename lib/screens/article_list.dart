@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
   @override
@@ -63,22 +65,20 @@ class _SearchPageState extends State<SearchPage> {
                 final articles = entry.value;
                 return MapEntry(
                   day,
-                  articles.where((article) => article.toLowerCase().contains(searchText)).toList(),
+                  articles
+                      .where((article) =>
+                          article.toLowerCase().contains(searchText))
+                      .toList(),
                 );
               }),
             );
 
-        
             return ListView(
               children: filteredData.entries.expand((entry) {
                 final day = entry.key;
                 final articles = entry.value;
-                return articles.map((article) => Card(
-                      child: ListTile(
-                        title: Text(article),
-                        subtitle: Text(day),
-                      ),
-                    ));
+                return articles
+                    .map((article) => ArticleCard(day: day, article: article));
               }).toList(),
             );
           }
@@ -104,4 +104,55 @@ Future<Map<String, List<String>>> loadArticleDataSimple() async {
 
   // Return the map directly
   return jsonData.map((key, value) => MapEntry(key, List<String>.from(value)));
+}
+
+class ArticleCard extends StatefulWidget {
+  const ArticleCard({super.key, required this.day, required this.article});
+
+  final String day;
+  final String article;
+
+  @override
+  State<ArticleCard> createState() => _ArticleCardState();
+}
+
+class _ArticleCardState extends State<ArticleCard> {
+  String get day => widget.day;
+  String get article => widget.article;
+  bool _isStarred = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStarredStatus();
+  }
+
+  void _loadStarredStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isStarred = prefs.getBool(article) ?? false;
+    });
+  }
+
+  void _toggleStarred() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isStarred = !_isStarred;
+    });
+    await prefs.setBool(article, _isStarred);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: Text(article),
+        subtitle: Text(day),
+        trailing: IconButton(
+          icon: Icon(_isStarred ? Icons.star : Icons.star_border),
+          onPressed: _toggleStarred,
+        ),
+      ),
+    );
+  }
 }
