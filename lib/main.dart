@@ -2,26 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:lernplan/screens/day_list.dart';
 import 'package:lernplan/screens/article_list.dart';
 import 'package:lernplan/screens/settings.dart';
+import 'package:lernplan/theme_provider.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(const MyApp());
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'Lernplan',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 0, 86, 247)),
-        useMaterial3: true,
-      ),
+      themeMode: themeProvider.themeMode, // Use the provider's theme mode
+      theme: lightTheme,
+      darkTheme: darkTheme,
       home: const MyHomePage(title: 'Lernplan'),
     );
   }
 }
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -42,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
@@ -68,13 +76,13 @@ class _MyHomePageState extends State<MyHomePage> {
       body: <Widget>[
         /// Home page
         const DayList(),
+
         /// Search page
         const SearchPage(),
+
         /// Settings page
         const SettingsSecreen(),
       ][currentPageIndex],
     );
   }
 }
-
-
