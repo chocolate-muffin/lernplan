@@ -44,4 +44,4 @@ app.*.map.json
 /pubspec.lock
 
 # linux
-.linux/
+linux/
